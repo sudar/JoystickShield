@@ -1,6 +1,6 @@
-#######################################
+#################################################
 # Syntax Coloring Map For Joystick Shield Library
-#######################################
+#################################################
 
 #######################################
 # Datatypes (KEYWORD1)
@@ -12,10 +12,16 @@ JoystickShield	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
-setPins	KEYWORD2
+setJoystickPins	KEYWORD2
+setButtonPins	KEYWORD2
 setThreshold	KEYWORD2
+
 processEvents	KEYWORD2
 processCallbacks	KEYWORD2
+
+
+# Joystick Functions
+
 isCentered	KEYWORD2
 isUp	KEYWORD2
 isRightUp	KEYWORD2
@@ -25,3 +31,37 @@ isDown	KEYWORD2
 isLeftDown	KEYWORD2
 isLeft	KEYWORD2
 isLeftUp	KEYWORD2
+
+
+# Button Functions
+
+isJoystickButton	KEYWORD2
+isUpButton	KEYWORD2
+isRightButton	KEYWORD2
+isDownButton	KEYWORD2
+isLeftButton	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+#Joystick states
+
+CENTER	LITERAL1
+UP	LITERAL1
+RIGHT_UP	LITERAL1
+RIGHT	LITERAL1
+RIGHT_DOWN	LITERAL1
+DOWN	LITERAL1
+LEFT_DOWN	LITERAL1
+LEFT	LITERAL1
+LEFT_UP	LITERAL1
+
+#Button states
+
+NO_BUTTON	LITERAL1
+JOYSTICK_BUTTON	LITERAL1
+UP_BUTTON	LITERAL1
+RIGHT_BUTTON	LITERAL1
+DOWN_BUTTON	LITERAL1
+LEFT_BUTTON	LITERAL1

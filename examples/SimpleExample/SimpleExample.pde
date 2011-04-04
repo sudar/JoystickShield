@@ -41,4 +41,23 @@ void loop() {
      Serial.println("LeftUp") ;
   }
 
+  if (joystickShield.isJoystickButton()) {
+     Serial.println("Joystick Clicked") ;
+  }
+
+  if (joystickShield.isUpButton()) {
+     Serial.println("Up Button Clicked") ;
+  }
+
+  if (joystickShield.isRightButton()) {
+     Serial.println("Right Button Clicked") ;
+  }
+
+  if (joystickShield.isDownButton()) {
+     Serial.println("Down Button Clicked") ;
+  }
+
+  if (joystickShield.isLeftButton()) {
+     Serial.println("Left Button Clicked") ;
+  }
 }

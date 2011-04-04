@@ -10,22 +10,56 @@ JoystickShield::JoystickShield() {
 
     // Sparkfun Joystick shield connects the Joystick to Pins 0 and 1.
     // Change it if you are using a different shield
-    setPins(0, 1);
+    setJoystickPins(0, 1);
 
-    // set pins to output mode
-    pinMode(pin_analog_x, OUTPUT);
-    pinMode(pin_analog_y, OUTPUT);
+    // Sparkfun Joystick shield connects the buttons to the following pins.
+    // change it if you are using a different shield.
+    setButtonPins(2, 4, 3, 5, 6);
 
-    currentStatus = CENTER; // by default set the position to centered
+    // by default set the position to centered
+    currentStatus = CENTER;
+
+    // by default set the button state to NO_BUTTON
+    currentButton = NO_BUTTON;
 }
 
 /**
  * Set Analyog pins which are connected to the Joystick
  *
  */
-void JoystickShield::setPins(byte pinX, byte pinY) {
+void JoystickShield::setJoystickPins(byte pinX, byte pinY) {
     pin_analog_x = pinX;
     pin_analog_y = pinY;
+
+    // set Joystick pins to input mode
+    pinMode(pin_analog_x, INPUT);
+    pinMode(pin_analog_y, INPUT);
+}
+
+/**
+ * Set the pins used by the buttons
+ *
+ */
+void JoystickShield::setButtonPins(byte pinSelect, byte pinUp, byte pinRight, byte pinDown, byte pinLeft) {
+    pin_select_button = pinSelect;
+    pin_up_button     = pinUp;
+    pin_right_button  = pinRight;
+    pin_down_button   = pinDown;
+    pin_left_button   = pinLeft;
+
+    // set Button pins to input mode
+    pinMode(pin_select_button, INPUT);
+    pinMode(pin_up_button    , INPUT);
+    pinMode(pin_right_button , INPUT);
+    pinMode(pin_down_button  , INPUT);
+    pinMode(pin_left_button  , INPUT);
+
+    // Enable "pull-up resistors" for buttons
+    digitalWrite(pin_select_button, HIGH);
+    digitalWrite(pin_up_button    , HIGH);
+    digitalWrite(pin_right_button , HIGH);
+    digitalWrite(pin_down_button  , HIGH);
+    digitalWrite(pin_left_button  , HIGH);
 }
 
 /**
@@ -47,9 +81,11 @@ void JoystickShield::processEvents() {
     int x_direction = 0;
     int y_direction = 0;
 
+    // read from Joystick pins
     int x_position = analogRead(pin_analog_x);
     int y_position = analogRead(pin_analog_y);
 
+    // determine Joystick direction
     if (x_position > x_threshold_high) {
         x_direction = 1;
     } else if (x_position < x_threshold_low) {
@@ -87,6 +123,28 @@ void JoystickShield::processEvents() {
             currentStatus = RIGHT_UP;
         }
     }
+
+    // Determine which buttons were pressed
+    if (digitalRead(pin_select_button) == LOW) {
+        currentButton = JOYSTICK_BUTTON;
+    }
+
+    if (digitalRead(pin_up_button) == LOW) {
+        currentButton = UP_BUTTON;
+    }
+
+    if (digitalRead(pin_right_button) == LOW) {
+        currentButton = RIGHT_BUTTON;
+    }
+
+    if (digitalRead(pin_down_button) == LOW) {
+        currentButton = DOWN_BUTTON;
+    }
+
+    if (digitalRead(pin_left_button) == LOW) {
+        currentButton = LEFT_BUTTON;
+    }
+
 }
 
 /**
@@ -195,4 +253,77 @@ bool JoystickShield::isLeftUp() {
     } else {
         return false;
     }
+}
+
+/**
+ * Joystick button pressed
+ *
+ */
+bool JoystickShield::isJoystickButton() {
+    if (currentButton == JOYSTICK_BUTTON) {
+        clearButtonStates();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Up button pressed
+ *
+ */
+bool JoystickShield::isUpButton() {
+    if (currentButton == UP_BUTTON) {
+        clearButtonStates();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Right button pressed
+ *
+ */
+bool JoystickShield::isRightButton() {
+    if (currentButton == RIGHT_BUTTON) {
+        clearButtonStates();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Down button pressed
+ *
+ */
+bool JoystickShield::isDownButton() {
+    if (currentButton == DOWN_BUTTON) {
+        clearButtonStates();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Left button pressed
+ *
+ */
+bool JoystickShield::isLeftButton() {
+    if (currentButton == LEFT_BUTTON) {
+        clearButtonStates();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Clear the current button state
+ *
+ */
+void JoystickShield::clearButtonStates() {
+    currentButton = NO_BUTTON;
 }
