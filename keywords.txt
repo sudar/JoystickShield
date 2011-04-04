@@ -1,0 +1,14 @@
+JoystickShield KEYWORD1
+setPins KEYWORD2
+setThreshold KEYWORD2
+processEvents KEYWORD2
+processCallbacks KEYWORD2
+isCentered KEYWORD2
+isUp KEYWORD2
+isRightUp KEYWORD2
+isRight KEYWORD2
+isRightDown KEYWORD2
+isDown KEYWORD2
+isLeftDown KEYWORD2
+isLeft KEYWORD2
+isLeftUp KEYWORD2
