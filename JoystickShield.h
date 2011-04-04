@@ -49,7 +49,7 @@ public:
     void processCallbacks();
 
     // Joystick events
-    bool isCentered();
+    bool isCenter();
     bool isUp();
     bool isRightUp();
     bool isRight();
@@ -66,6 +66,24 @@ public:
     bool isDownButton();
     bool isLeftButton();
 
+    // Joystick callbacks
+    void onJSCenter(void (*centerCallback)(void));
+    void onJSUp(void (*upCallback)(void));
+    void onJSRightUp(void (*rightUpCallback)(void));
+    void onJSRight(void (*rightCallback)(void));
+    void onJSRightDown(void (*rightDownCallback)(void));
+    void onJSDown(void (*downCallback)(void));
+    void onJSLeftDown(void (*leftDownCallback)(void));
+    void onJSLeft(void (*leftCallback)(void));
+    void onJSLeftUp(void (*leftUpCallback)(void));
+
+    // Button callbacks
+    void onJoystickButton(void (*jsButtonCallback)(void));
+    void onUpButton(void (*upButtonCallback)(void));
+    void onRightButton(void (*rightButtonCallback)(void));
+    void onDownButton(void (*downButtonCallback)(void));
+    void onLeftButton(void (*leftButtonCallback)(void));
+
 private:
 
     // threshold values
@@ -79,7 +97,7 @@ private:
     byte pin_analog_y;
 
     //button pins
-    byte pin_select_button;
+    byte pin_joystick_button;
     byte pin_up_button;
     byte pin_right_button;
     byte pin_down_button;
@@ -91,7 +109,27 @@ private:
     //current button states
     ButtonStates currentButton;
 
+    // Joystick callbacks
+    void (*centerCallback)(void);
+    void (*upCallback)(void);
+    void (*rightUpCallback)(void);
+    void (*rightCallback)(void);
+    void (*rightDownCallback)(void);
+    void (*downCallback)(void);
+    void (*leftDownCallback)(void);
+    void (*leftCallback)(void);
+    void (*leftUpCallback)(void);
+
+    // Button callbacks
+    void (*jsButtonCallback)(void);
+    void (*upButtonCallback)(void);
+    void (*rightButtonCallback)(void);
+    void (*downButtonCallback)(void);
+    void (*leftButtonCallback)(void);
+
+    // helper functions
     void clearButtonStates();
+    void initializeCallbacks();
 };
 
 #endif

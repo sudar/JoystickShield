@@ -21,6 +21,9 @@ JoystickShield::JoystickShield() {
 
     // by default set the button state to NO_BUTTON
     currentButton = NO_BUTTON;
+
+    // initialize all callback function pointers to NULL
+    initializeCallbacks();
 }
 
 /**
@@ -41,25 +44,25 @@ void JoystickShield::setJoystickPins(byte pinX, byte pinY) {
  *
  */
 void JoystickShield::setButtonPins(byte pinSelect, byte pinUp, byte pinRight, byte pinDown, byte pinLeft) {
-    pin_select_button = pinSelect;
-    pin_up_button     = pinUp;
-    pin_right_button  = pinRight;
-    pin_down_button   = pinDown;
-    pin_left_button   = pinLeft;
+    pin_joystick_button = pinSelect;
+    pin_up_button       = pinUp;
+    pin_right_button    = pinRight;
+    pin_down_button     = pinDown;
+    pin_left_button     = pinLeft;
 
     // set Button pins to input mode
-    pinMode(pin_select_button, INPUT);
-    pinMode(pin_up_button    , INPUT);
-    pinMode(pin_right_button , INPUT);
-    pinMode(pin_down_button  , INPUT);
-    pinMode(pin_left_button  , INPUT);
+    pinMode(pin_joystick_button, INPUT);
+    pinMode(pin_up_button      , INPUT);
+    pinMode(pin_right_button   , INPUT);
+    pinMode(pin_down_button    , INPUT);
+    pinMode(pin_left_button    , INPUT);
 
     // Enable "pull-up resistors" for buttons
-    digitalWrite(pin_select_button, HIGH);
-    digitalWrite(pin_up_button    , HIGH);
-    digitalWrite(pin_right_button , HIGH);
-    digitalWrite(pin_down_button  , HIGH);
-    digitalWrite(pin_left_button  , HIGH);
+    digitalWrite(pin_joystick_button, HIGH);
+    digitalWrite(pin_up_button      , HIGH);
+    digitalWrite(pin_right_button   , HIGH);
+    digitalWrite(pin_down_button    , HIGH);
+    digitalWrite(pin_left_button    , HIGH);
 }
 
 /**
@@ -125,7 +128,7 @@ void JoystickShield::processEvents() {
     }
 
     // Determine which buttons were pressed
-    if (digitalRead(pin_select_button) == LOW) {
+    if (digitalRead(pin_joystick_button) == LOW) {
         currentButton = JOYSTICK_BUTTON;
     }
 
@@ -147,11 +150,75 @@ void JoystickShield::processEvents() {
 
 }
 
+
+void JoystickShield::processCallbacks() {
+    processEvents();
+
+    // Joystick Callbacks
+    if (isCenter() && centerCallback != NULL) {
+        centerCallback();
+    }
+
+    if (isUp() && upCallback != NULL) {
+        upCallback();
+    }
+
+    if (isRightUp() && rightUpCallback != NULL) {
+        rightUpCallback();
+    }
+
+    if (isRight() && rightCallback != NULL) {
+        rightCallback();
+    }
+
+    if (isRightDown() && rightDownCallback != NULL) {
+        rightDownCallback();
+    }
+
+    if (isDown() && downCallback != NULL) {
+        downCallback();
+    }
+
+    if (isLeftDown() && leftDownCallback != NULL) {
+        leftDownCallback();
+    }
+
+    if (isLeft() && leftCallback != NULL) {
+        leftCallback();
+    }
+
+    if (isLeftUp() && leftUpCallback != NULL) {
+        leftUpCallback();
+    }
+
+    // Button Callbacks
+    if (isJoystickButton() && jsButtonCallback != NULL) {
+        jsButtonCallback();
+    }
+
+    if (isUpButton() && upButtonCallback != NULL) {
+        upButtonCallback();
+    }
+
+    if (isRightButton() && rightButtonCallback != NULL) {
+        rightButtonCallback();
+    }
+
+    if (isDownButton() && downButtonCallback != NULL) {
+        downButtonCallback();
+    }
+
+    if (isLeftButton() && leftButtonCallback != NULL) {
+        leftButtonCallback();
+    }
+
+}
+
 /**
  * Joystick in Center status
  *
  */
-bool JoystickShield::isCentered() {
+bool JoystickShield::isCenter() {
     if (currentStatus == CENTER ) {
         return true;
     } else {
@@ -321,9 +388,103 @@ bool JoystickShield::isLeftButton() {
 }
 
 /**
+ * Joystick Callbacks
+ *
+ */
+/****************************************************************** */
+void JoystickShield::onJSCenter(void (*centerCallback)(void)) {
+    this->centerCallback = centerCallback;
+}
+
+void JoystickShield::onJSUp(void (*upCallback)(void)) {
+    this->upCallback = upCallback;
+}
+
+void JoystickShield::onJSRightUp(void (*rightUpCallback)(void)) {
+    this->rightUpCallback = rightUpCallback;
+}
+
+void JoystickShield::onJSRight(void (*rightCallback)(void)) {
+    this->rightCallback = rightCallback;
+}
+
+void JoystickShield::onJSRightDown(void (*rightDownCallback)(void)) {
+    this->rightDownCallback = rightDownCallback;
+}
+
+void JoystickShield::onJSDown(void (*downCallback)(void)) {
+    this->downCallback = downCallback;
+}
+
+void JoystickShield::onJSLeftDown(void (*leftDownCallback)(void)) {
+    this->leftDownCallback = leftDownCallback;
+}
+
+void JoystickShield::onJSLeft(void (*leftCallback)(void)) {
+    this->leftCallback = leftCallback;
+}
+
+void JoystickShield::onJSLeftUp(void (*leftUpCallback)(void)) {
+    this->leftUpCallback = leftUpCallback;
+}
+
+/****************************************************************** */
+
+/**
+ * Button Callbacks
+ *
+ */
+ /****************************************************************** */
+void JoystickShield::onJoystickButton(void (*jsButtonCallback)(void)) {
+    this->jsButtonCallback = jsButtonCallback;
+}
+
+void JoystickShield::onUpButton(void (*upButtonCallback)(void)) {
+    this->upButtonCallback = upButtonCallback;
+}
+
+void JoystickShield::onRightButton(void (*rightButtonCallback)(void)) {
+    this->rightButtonCallback = rightButtonCallback;
+}
+
+void JoystickShield::onDownButton(void (*downButtonCallback)(void)) {
+    this->downButtonCallback = downButtonCallback;
+}
+
+void JoystickShield::onLeftButton(void (*leftButtonCallback)(void)) {
+    this->leftButtonCallback = leftButtonCallback;
+}
+
+/****************************************************************** */
+
+/**
  * Clear the current button state
  *
  */
 void JoystickShield::clearButtonStates() {
     currentButton = NO_BUTTON;
+}
+
+/**
+ * Initialize all Function pointers to NULL
+ *
+ */
+void JoystickShield::initializeCallbacks() {
+    // Joystick callbacks
+    centerCallback      = NULL;
+    upCallback          = NULL;
+    rightUpCallback     = NULL;
+    rightCallback       = NULL;
+    rightDownCallback   = NULL;
+    downCallback        = NULL;
+    leftDownCallback    = NULL;
+    leftCallback        = NULL;
+    leftUpCallback      = NULL;
+
+    // Button callbacks
+    jsButtonCallback    = NULL;
+    upButtonCallback    = NULL;
+    rightButtonCallback = NULL;
+    downButtonCallback  = NULL;
+    leftButtonCallback  = NULL;
 }

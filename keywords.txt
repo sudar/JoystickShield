@@ -22,7 +22,7 @@ processCallbacks	KEYWORD2
 
 # Joystick Functions
 
-isCentered	KEYWORD2
+isCenter	KEYWORD2
 isUp	KEYWORD2
 isRightUp	KEYWORD2
 isRight	KEYWORD2
@@ -40,6 +40,26 @@ isUpButton	KEYWORD2
 isRightButton	KEYWORD2
 isDownButton	KEYWORD2
 isLeftButton	KEYWORD2
+
+# Joystick callbacks Functions
+
+onJSCenter	KEYWORD2
+onJSUp	KEYWORD2
+onJSRightUp	KEYWORD2
+onJSRight	KEYWORD2
+onJSRightDown	KEYWORD2
+onJSDown	KEYWORD2
+onJSLeftDown	KEYWORD2
+onJSLeft	KEYWORD2
+onJSLeftUp	KEYWORD2
+
+# Button callbacks
+
+onJoystickButton	KEYWORD2
+onUpButton	KEYWORD2
+onRightButton	KEYWORD2
+onDownButton	KEYWORD2
+onLeftButton	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
