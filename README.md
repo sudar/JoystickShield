@@ -23,8 +23,12 @@ Explanation/documentation of the library can be found in its [homepage](http://s
 
 ## License
 
-The source code of this library and the examples are released under GPL license.
+The source code of this library and the examples are released under "THE BEER-WARE" license.
+
+I would, however, consider it a great courtesy if you could email me and tell me about your project and how this code was used, just for my own continued personal gratification :)
+
+You can also find other ways to [make me happy](http://sudarmuthu.com/if-you-wanna-thank-me), if you liked this project.
 
 ## Note
 
-More details about the app can be found its [homepage](http://sudarmuthu.com/arduino/joystickshield).
+More details about the library can be found its [homepage](http://sudarmuthu.com/arduino/joystickshield).
