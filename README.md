@@ -19,7 +19,7 @@ The library has two examples sketches which explains the modes
 
 ## Explanation
 
-Explanation/documentation of the library can be found in its [homepage](http://sudarmuthu.com/arduino/joystickshield)
+Explanation/documentation of the library can be found in its [homepage](http://hardwarefun.com/projects/joystick-shield)
 
 ## License
 
@@ -31,4 +31,4 @@ You can also find other ways to [make me happy](http://sudarmuthu.com/if-you-wan
 
 ## Note
 
-More details about the library can be found its [homepage](http://sudarmuthu.com/arduino/joystickshield).
+More details about the library can be found its [homepage](http://hardwarefun.com/projects/joystick-shield).

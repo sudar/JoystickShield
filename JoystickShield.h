@@ -1,5 +1,5 @@
 /**
-   JoystickShield - Arduino Library for JoystickShield (http://sudarmuthu.com/arduino/joystickshield)
+   JoystickShield - Arduino Library for JoystickShield (http://hardwarefun.com/projects/joystick-shield)
 
  *
  * ----------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 #################################################
 # Syntax Coloring Map For Joystick Shield Library
-# http://sudarmuthu.com/arduino/joystickshield
+# http://hardwarefun.com/projects/joystick-shield
 #################################################
 
 #######################################
