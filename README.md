@@ -7,8 +7,11 @@ The library supports both event based (callback mode) and the normal mode. Refer
 The library supports the following events
 
 *   All 8 directions of Joystick. (Up, RightUp, Right, RightDown, Down, LeftDown, Left and LeftUp)
+* + amplitude of all 4 directions (in % from -100% to 100% per axis)
 *   Joystick button press
 *   All 4 button press (Up, Right, Down, Left)
+* + 2 special Buttons F and E
+* + calibrate Joystick function
 
 ## Examples
 

@@ -8,10 +8,22 @@
  * can do whatever you want with this stuff. If we meet some day, and you think
  * this stuff is worth it, you can buy me a beer or coffee in return - Sudar
  * ----------------------------------------------------------------------------
+ * 2014 edit by Markus Mücke, muecke.ma(a)gmail.com
+ * Changes for JoysikShield V1.2
+ * added a function to read the amplitude of the joystick
+ * added a auto calibrate function for 3.3V and 5V mode
+ *
+ * Added functions:
+ *  Functions for F and E Button
+ *  Calibrate Joystick
+ *  xAmplitude
+ *  yAmplitude
  */
 
 #ifndef JoystickShield_H
 #define JoystickShield_H
+
+#define CENTERTOLERANCE 5
 
 // Compatibility for Arduino 1.0
 
@@ -47,7 +59,9 @@ enum ButtonStates {
     UP_BUTTON,
     RIGHT_BUTTON,
     DOWN_BUTTON,
-    LEFT_BUTTON    //5
+    LEFT_BUTTON,    //5
+	F_BUTTON,
+	E_BUTTON
 };
 
 /**
@@ -60,11 +74,13 @@ public:
     JoystickShield(); // constructor
 
     void setJoystickPins (byte pinX, byte pinY);
-    void setButtonPins(byte pinSelect, byte pinUp, byte pinRight, byte pinDown, byte pinLeft);
+    void setButtonPins(byte pinSelect, byte pinUp, byte pinRight, byte pinDown, byte pinLeft, byte pinF, byte pinE);
     void setThreshold(int xLow, int xHigh, int yLow, int yHigh);
 
     void processEvents();
     void processCallbacks();
+	
+	void calibrateJoystick();
 
     // Joystick events
     bool isCenter();
@@ -76,6 +92,11 @@ public:
     bool isLeftDown();
     bool isLeft();
     bool isLeftUp();
+	bool isNotCenter();
+	
+	// Joystick coordinates
+	int xAmplitude();
+	int yAmplitude();
 
     // Button events
     bool isJoystickButton();
@@ -83,6 +104,8 @@ public:
     bool isRightButton();
     bool isDownButton();
     bool isLeftButton();
+	bool isFButton();
+	bool isEButton();
 
     // Joystick callbacks
     void onJSCenter(void (*centerCallback)(void));
@@ -94,6 +117,7 @@ public:
     void onJSLeftDown(void (*leftDownCallback)(void));
     void onJSLeft(void (*leftCallback)(void));
     void onJSLeftUp(void (*leftUpCallback)(void));
+	void onJSnotCenter(void (*notCenterCallback)(void));
 
     // Button callbacks
     void onJoystickButton(void (*jsButtonCallback)(void));
@@ -101,7 +125,9 @@ public:
     void onRightButton(void (*rightButtonCallback)(void));
     void onDownButton(void (*downButtonCallback)(void));
     void onLeftButton(void (*leftButtonCallback)(void));
-
+	void onFButton(void (*FButtonCallback)(void));
+	void onEButton(void (*EButtonCallback)(void));
+	
 private:
 
     // threshold values
@@ -120,6 +146,13 @@ private:
     byte pin_right_button;
     byte pin_down_button;
     byte pin_left_button;
+	byte pin_F_button;
+	byte pin_E_button;
+	
+	// joystick
+	byte joystikStroke;
+	int x_position;
+	int y_position;
 
     //current states of Joystick
     JoystickStates currentStatus;
@@ -137,6 +170,7 @@ private:
     void (*leftDownCallback)(void);
     void (*leftCallback)(void);
     void (*leftUpCallback)(void);
+	void (*notCenterCallback)(void);
 
     // Button callbacks
     void (*jsButtonCallback)(void);
@@ -144,6 +178,9 @@ private:
     void (*rightButtonCallback)(void);
     void (*downButtonCallback)(void);
     void (*leftButtonCallback)(void);
+	void (*FButtonCallback)(void);
+	void (*EButtonCallback)(void);
+	
 
     // helper functions
     void clearButtonStates();

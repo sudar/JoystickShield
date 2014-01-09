@@ -32,7 +32,7 @@ isDown	KEYWORD2
 isLeftDown	KEYWORD2
 isLeft	KEYWORD2
 isLeftUp	KEYWORD2
-
+isnotCenter	KEYWORD2
 
 # Button Functions
 
@@ -41,6 +41,12 @@ isUpButton	KEYWORD2
 isRightButton	KEYWORD2
 isDownButton	KEYWORD2
 isLeftButton	KEYWORD2
+isFButton	KEYWORD2
+isEButton	KEYWORD2
+
+# Joystick coordinates
+xAmplitude	KEYWORD2
+yAmplitude	KEYWORD2
 
 # Joystick callbacks Functions
 
@@ -53,6 +59,7 @@ onJSDown	KEYWORD2
 onJSLeftDown	KEYWORD2
 onJSLeft	KEYWORD2
 onJSLeftUp	KEYWORD2
+onJSnotCenter	KEYWORD2
 
 # Button callbacks
 
@@ -61,6 +68,8 @@ onUpButton	KEYWORD2
 onRightButton	KEYWORD2
 onDownButton	KEYWORD2
 onLeftButton	KEYWORD2
+onFButton		KEYWORD2
+onEButton		KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
@@ -86,3 +95,5 @@ UP_BUTTON	LITERAL1
 RIGHT_BUTTON	LITERAL1
 DOWN_BUTTON	LITERAL1
 LEFT_BUTTON	LITERAL1
+F_BUTTON	LITERAL1
+E_BUTTON	LITERAL1
