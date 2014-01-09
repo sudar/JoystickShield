@@ -9,7 +9,17 @@
  * can do whatever you want with this stuff. If we meet some day, and you think
  * this stuff is worth it, you can buy me a beer or coffee in return - Sudar
  * ----------------------------------------------------------------------------
- */
+  * 2014 edit by Markus Mücke, muecke.ma(a)gmail.com
+  * Changes for JoysikShield V1.2
+  * added a function to read the amplitude of the joystick
+  * added a auto calibrate function for 3.3V and 5V mode
+  *
+  * Added functions:
+  *  Functions for F and E Button
+  *  Calibrate Joystick
+  *  xAmplitude
+  *  yAmplitude
+  */
 
 #include "JoystickShield.h"
 
@@ -24,10 +34,10 @@ JoystickShield::JoystickShield() {
     // Sparkfun Joystick shield connects the Joystick to Pins 0 and 1.
     // Change it if you are using a different shield
     setJoystickPins(0, 1);
-
+	
     // Sparkfun Joystick shield connects the buttons to the following pins.
     // change it if you are using a different shield.
-    setButtonPins(2, 4, 3, 5, 6);
+    setButtonPins(8, 2, 3, 4, 5, 7, 6);
 
     // by default set the position to centered
     currentStatus = CENTER;
@@ -54,14 +64,16 @@ void JoystickShield::setJoystickPins(byte pinX, byte pinY) {
 
 /**
  * Set the pins used by the buttons
- *
+ * to deactivate a button use a pin outside of the range of the arduino e.g. 255
  */
-void JoystickShield::setButtonPins(byte pinSelect, byte pinUp, byte pinRight, byte pinDown, byte pinLeft) {
+void JoystickShield::setButtonPins(byte pinSelect, byte pinUp, byte pinRight, byte pinDown, byte pinLeft, byte pinF, byte pinE)  {
     pin_joystick_button = pinSelect;
     pin_up_button       = pinUp;
     pin_right_button    = pinRight;
     pin_down_button     = pinDown;
     pin_left_button     = pinLeft;
+	pin_F_button		= pinF;
+	pin_E_button		= pinE;
 
     // set Button pins to input mode
     pinMode(pin_joystick_button, INPUT);
@@ -69,6 +81,8 @@ void JoystickShield::setButtonPins(byte pinSelect, byte pinUp, byte pinRight, by
     pinMode(pin_right_button   , INPUT);
     pinMode(pin_down_button    , INPUT);
     pinMode(pin_left_button    , INPUT);
+	pinMode(pin_E_button	   , INPUT);
+	pinMode(pin_F_button       , INPUT);
 
     // Enable "pull-up resistors" for buttons
     digitalWrite(pin_joystick_button, HIGH);
@@ -76,6 +90,8 @@ void JoystickShield::setButtonPins(byte pinSelect, byte pinUp, byte pinRight, by
     digitalWrite(pin_right_button   , HIGH);
     digitalWrite(pin_down_button    , HIGH);
     digitalWrite(pin_left_button    , HIGH);
+	digitalWrite(pin_F_button       , HIGH);
+	digitalWrite(pin_E_button       , HIGH);
 }
 
 /**
@@ -90,6 +106,32 @@ void JoystickShield::setThreshold(int xLow, int xHigh, int yLow, int yHigh) {
 }
 
 /**
+ * Calibrate Joystick
+ *
+ */
+void JoystickShield::calibrateJoystick()  {
+	byte i;
+
+	// calibrate x
+	int xCenter = 0;
+	for(i = 0; i<10; i++)
+		xCenter += analogRead(pin_analog_x);
+	xCenter /= i;
+
+	// calibrate y
+	int yCenter = 0;
+	for(i = 0; i<10; i++)
+		yCenter += analogRead(pin_analog_y);
+	yCenter /= i;
+
+	// save Stroke of Joystick
+	joystikStroke = max(pin_analog_x, pin_analog_y)*1.01;
+
+	// set Center with tolerance
+	setThreshold(xCenter-CENTERTOLERANCE, xCenter+CENTERTOLERANCE, yCenter-CENTERTOLERANCE, yCenter+CENTERTOLERANCE);
+}
+
+/**
  * Process Events. This should be called in the loop()
  *
  */
@@ -98,21 +140,30 @@ void JoystickShield::processEvents() {
     int y_direction = 0;
 
     // read from Joystick pins
-    int x_position = analogRead(pin_analog_x);
-    int y_position = analogRead(pin_analog_y);
+    x_position = analogRead(pin_analog_x);
+    y_position = analogRead(pin_analog_y);
 
     // determine Joystick direction
     if (x_position > x_threshold_high) {
         x_direction = 1;
-    } else if (x_position < x_threshold_low) {
+		x_position = map(x_position, x_threshold_high,x_threshold_high+x_threshold_low,0,100);
+		x_position = constrain(x_position,0,100);
+	} else if (x_position < x_threshold_low) {
         x_direction = -1;
-    }
+		x_position = map(x_position, 0,x_threshold_low,-100,0);
+    } else
+		x_position = 0;
 
     if (y_position > y_threshold_high) {
         y_direction = 1;
+		y_position = map(y_position, y_threshold_high,y_threshold_high+y_threshold_low,0,100);
+		y_position = constrain(y_position,0,100);
     } else if (y_position < y_threshold_low) {
         y_direction = -1;
-    }
+		y_position = map(y_position, 0,y_threshold_low,-100,0);
+    } else
+		y_position = 0;
+		
 
     if (x_direction == -1) {
         if (y_direction == -1) {
@@ -139,7 +190,7 @@ void JoystickShield::processEvents() {
             currentStatus = RIGHT_UP;
         }
     }
-
+	
     // Determine which buttons were pressed
     if (digitalRead(pin_joystick_button) == LOW) {
         currentButton = JOYSTICK_BUTTON;
@@ -161,6 +212,13 @@ void JoystickShield::processEvents() {
         currentButton = LEFT_BUTTON;
     }
 
+	if (digitalRead(pin_F_button) == LOW) {
+		currentButton = F_BUTTON;
+	}
+
+	if (digitalRead(pin_E_button) == LOW) {
+		currentButton = E_BUTTON;
+	}	
 }
 
 
@@ -203,7 +261,11 @@ void JoystickShield::processCallbacks() {
     if (isLeftUp() && leftUpCallback != NULL) {
         leftUpCallback();
     }
-
+	
+	if (isNotCenter() && notCenterCallback != NULL) {
+		notCenterCallback();
+	}
+		
     // Button Callbacks
     if (isJoystickButton() && jsButtonCallback != NULL) {
         jsButtonCallback();
@@ -224,6 +286,14 @@ void JoystickShield::processCallbacks() {
     if (isLeftButton() && leftButtonCallback != NULL) {
         leftButtonCallback();
     }
+	
+	if (isFButton() && FButtonCallback != NULL) {
+        FButtonCallback();
+    }
+	
+	if (isEButton() && EButtonCallback != NULL) {
+		EButtonCallback();
+	}
 
 }
 
@@ -336,6 +406,34 @@ bool JoystickShield::isLeftUp() {
 }
 
 /**
+ * Joystick in not Center status
+ *
+ */
+bool JoystickShield::isNotCenter() {
+    if (currentStatus != CENTER) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Joystick x position from -100 to 100, 0 = center
+ *
+ */
+int JoystickShield::xAmplitude()  {
+	return x_position;
+}
+
+/**
+ * Joystick y position from -100 to 100, 0 = center
+ *
+ */
+int JoystickShield::yAmplitude()  {
+	return y_position;
+}
+
+/**
  * Joystick button pressed
  *
  */
@@ -401,6 +499,31 @@ bool JoystickShield::isLeftButton() {
 }
 
 /**
+ * F button pressed
+ *
+ */
+bool JoystickShield::isFButton() {
+    if (currentButton == F_BUTTON) {
+        clearButtonStates();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * E button pressed
+ *
+ */
+bool JoystickShield::isEButton() {
+    if (currentButton == E_BUTTON) {
+        clearButtonStates();
+        return true;
+    } else {
+        return false;
+    }
+}
+/**
  * Joystick Callbacks
  *
  */
@@ -441,6 +564,10 @@ void JoystickShield::onJSLeftUp(void (*leftUpCallback)(void)) {
     this->leftUpCallback = leftUpCallback;
 }
 
+void JoystickShield::onJSnotCenter(void (*notCenterCallback)(void)) {
+	this->notCenterCallback = notCenterCallback;
+}
+
 /****************************************************************** */
 
 /**
@@ -468,6 +595,14 @@ void JoystickShield::onLeftButton(void (*leftButtonCallback)(void)) {
     this->leftButtonCallback = leftButtonCallback;
 }
 
+void JoystickShield::onFButton(void (*FButtonCallback)(void)) {
+	this->FButtonCallback = FButtonCallback;
+}
+
+void JoystickShield::onEButton(void (*EButtonCallback)(void)) {
+	this->EButtonCallback = EButtonCallback;
+}
+
 /****************************************************************** */
 
 /**
@@ -493,6 +628,7 @@ void JoystickShield::initializeCallbacks() {
     leftDownCallback    = NULL;
     leftCallback        = NULL;
     leftUpCallback      = NULL;
+	notCenterCallback   = NULL;
 
     // Button callbacks
     jsButtonCallback    = NULL;
@@ -500,4 +636,6 @@ void JoystickShield::initializeCallbacks() {
     rightButtonCallback = NULL;
     downButtonCallback  = NULL;
     leftButtonCallback  = NULL;
+	FButtonCallback		= NULL;
+	EButtonCallback		= NULL;
 }
