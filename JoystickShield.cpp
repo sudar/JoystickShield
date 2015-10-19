@@ -9,8 +9,8 @@
  * can do whatever you want with this stuff. If we meet some day, and you think
  * this stuff is worth it, you can buy me a beer or coffee in return - Sudar
  * ----------------------------------------------------------------------------
-  * 2014 edit by Markus Mücke, muecke.ma(a)gmail.com
-  * Changes for JoysikShield V1.2
+  * 2014 edit by Markus Mï¿½cke, muecke.ma(a)gmail.com
+  * Changes for JoystickShield V1.2
   * added a function to read the amplitude of the joystick
   * added a auto calibrate function for 3.3V and 5V mode
   *
@@ -19,7 +19,11 @@
   *  Calibrate Joystick
   *  xAmplitude
   *  yAmplitude
-  */
+   *
+   * 20th October 2015 edit by Lindsay Ward, https://github.com/lindsaymarkward
+   * made buttons not mutually exclusive
+   * functions report the current state button so multiple buttons can be pressed at one time
+*/
 
 #include "JoystickShield.h"
 
@@ -41,9 +45,9 @@ JoystickShield::JoystickShield() {
 
     // by default set the position to centered
     currentStatus = CENTER;
-
-    // by default set the button state to NO_BUTTON
-    currentButton = NO_BUTTON;
+    
+    // initialize the button states array to all buttons not pressed
+    memcpy(buttonStates, ALL_BUTTONS_OFF, sizeof(ALL_BUTTONS_OFF));
 
     // initialize all callback function pointers to NULL
     initializeCallbacks();
@@ -125,7 +129,7 @@ void JoystickShield::calibrateJoystick()  {
 	yCenter /= i;
 
 	// save Stroke of Joystick
-	joystikStroke = max(pin_analog_x, pin_analog_y)*1.01;
+	joystickStroke = max(pin_analog_x, pin_analog_y)*1.01;
 
 	// set Center with tolerance
 	setThreshold(xCenter-CENTERTOLERANCE, xCenter+CENTERTOLERANCE, yCenter-CENTERTOLERANCE, yCenter+CENTERTOLERANCE);
@@ -191,34 +195,14 @@ void JoystickShield::processEvents() {
         }
     }
 	
-    // Determine which buttons were pressed
-    if (digitalRead(pin_joystick_button) == LOW) {
-        currentButton = JOYSTICK_BUTTON;
-    }
-
-    if (digitalRead(pin_up_button) == LOW) {
-        currentButton = UP_BUTTON;
-    }
-
-    if (digitalRead(pin_right_button) == LOW) {
-        currentButton = RIGHT_BUTTON;
-    }
-
-    if (digitalRead(pin_down_button) == LOW) {
-        currentButton = DOWN_BUTTON;
-    }
-
-    if (digitalRead(pin_left_button) == LOW) {
-        currentButton = LEFT_BUTTON;
-    }
-
-	if (digitalRead(pin_F_button) == LOW) {
-		currentButton = F_BUTTON;
-	}
-
-	if (digitalRead(pin_E_button) == LOW) {
-		currentButton = E_BUTTON;
-	}	
+    // Determine which buttons were pressed, set button states array values to true/false accordingly
+    buttonStates[0] = digitalRead(pin_up_button) == LOW;
+    buttonStates[1] = digitalRead(pin_right_button) == LOW;
+    buttonStates[2] = digitalRead(pin_down_button) == LOW;
+    buttonStates[3] = digitalRead(pin_left_button) == LOW;
+    buttonStates[5] = digitalRead(pin_E_button) == LOW;
+    buttonStates[4] = digitalRead(pin_F_button) == LOW;
+    buttonStates[6] = digitalRead(pin_joystick_button) == LOW;
 }
 
 
@@ -434,29 +418,11 @@ int JoystickShield::yAmplitude()  {
 }
 
 /**
- * Joystick button pressed
- *
- */
-bool JoystickShield::isJoystickButton() {
-    if (currentButton == JOYSTICK_BUTTON) {
-        clearButtonStates();
-        return true;
-    } else {
-        return false;
-    }
-}
-
-/**
  * Up button pressed
  *
  */
 bool JoystickShield::isUpButton() {
-    if (currentButton == UP_BUTTON) {
-        clearButtonStates();
-        return true;
-    } else {
-        return false;
-    }
+    return buttonStates[0];
 }
 
 /**
@@ -464,12 +430,7 @@ bool JoystickShield::isUpButton() {
  *
  */
 bool JoystickShield::isRightButton() {
-    if (currentButton == RIGHT_BUTTON) {
-        clearButtonStates();
-        return true;
-    } else {
-        return false;
-    }
+    return buttonStates[1];
 }
 
 /**
@@ -477,12 +438,7 @@ bool JoystickShield::isRightButton() {
  *
  */
 bool JoystickShield::isDownButton() {
-    if (currentButton == DOWN_BUTTON) {
-        clearButtonStates();
-        return true;
-    } else {
-        return false;
-    }
+    return buttonStates[2];
 }
 
 /**
@@ -490,25 +446,7 @@ bool JoystickShield::isDownButton() {
  *
  */
 bool JoystickShield::isLeftButton() {
-    if (currentButton == LEFT_BUTTON) {
-        clearButtonStates();
-        return true;
-    } else {
-        return false;
-    }
-}
-
-/**
- * F button pressed
- *
- */
-bool JoystickShield::isFButton() {
-    if (currentButton == F_BUTTON) {
-        clearButtonStates();
-        return true;
-    } else {
-        return false;
-    }
+    return buttonStates[3];
 }
 
 /**
@@ -516,13 +454,25 @@ bool JoystickShield::isFButton() {
  *
  */
 bool JoystickShield::isEButton() {
-    if (currentButton == E_BUTTON) {
-        clearButtonStates();
-        return true;
-    } else {
-        return false;
-    }
+    return buttonStates[4];
 }
+
+/**
+ * F button pressed
+ *
+ */
+bool JoystickShield::isFButton() {
+    return buttonStates[5];
+}
+
+/**
+ * Joystick button pressed
+ *
+ */
+bool JoystickShield::isJoystickButton() {
+    return buttonStates[6];
+}
+
 /**
  * Joystick Callbacks
  *
@@ -606,15 +556,7 @@ void JoystickShield::onEButton(void (*EButtonCallback)(void)) {
 /****************************************************************** */
 
 /**
- * Clear the current button state
- *
- */
-void JoystickShield::clearButtonStates() {
-    currentButton = NO_BUTTON;
-}
-
-/**
- * Initialize all Function pointers to NULL
+ * Initialize all function pointers to NULL
  *
  */
 void JoystickShield::initializeCallbacks() {
