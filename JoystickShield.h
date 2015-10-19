@@ -8,7 +8,7 @@
  * can do whatever you want with this stuff. If we meet some day, and you think
  * this stuff is worth it, you can buy me a beer or coffee in return - Sudar
  * ----------------------------------------------------------------------------
- * 2014 edit by Markus M�cke, muecke.ma(a)gmail.com
+ * 2014 edit by Markus Mücke, muecke.ma(a)gmail.com
  * Changes for JoystickShield V1.2
  * added a function to read the amplitude of the joystick
  * added a auto calibrate function for 3.3V and 5V mode
