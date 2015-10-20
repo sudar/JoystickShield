@@ -8,8 +8,8 @@
  * can do whatever you want with this stuff. If we meet some day, and you think
  * this stuff is worth it, you can buy me a beer or coffee in return - Sudar
  * ----------------------------------------------------------------------------
- * 2014 edit by Markus Mücke, muecke.ma(a)gmail.com
- * Changes for JoysikShield V1.2
+ * 2014 edit by Markus MÃ¼cke, muecke.ma(a)gmail.com
+ * Changes for JoystickShield V1.2
  * added a function to read the amplitude of the joystick
  * added a auto calibrate function for 3.3V and 5V mode
  *
@@ -18,7 +18,11 @@
  *  Calibrate Joystick
  *  xAmplitude
  *  yAmplitude
- */
+   *
+   * 20th October 2015 edit by Lindsay Ward, https://github.com/lindsaymarkward
+   * made buttons not mutually exclusive
+   * functions report the current button state so multiple buttons can be pressed at one time
+*/
 
 #ifndef JoystickShield_H
 #define JoystickShield_H
@@ -49,20 +53,8 @@ enum JoystickStates {
     LEFT_UP   //8
 };
 
-/**
- * Enum to hold the button states
- *
- */
-enum ButtonStates {
-    NO_BUTTON,     //0
-    JOYSTICK_BUTTON,
-    UP_BUTTON,
-    RIGHT_BUTTON,
-    DOWN_BUTTON,
-    LEFT_BUTTON,    //5
-	F_BUTTON,
-	E_BUTTON
-};
+
+static const bool ALL_BUTTONS_OFF[7] = {false, false, false, false, false, false, false};
 
 /**
  * Class to encapsulate JoystickShield
@@ -150,15 +142,16 @@ private:
 	byte pin_E_button;
 	
 	// joystick
-	byte joystikStroke;
+	byte joystickStroke;
 	int x_position;
 	int y_position;
 
     //current states of Joystick
     JoystickStates currentStatus;
 
-    //current button states
-    ButtonStates currentButton;
+    // array of button states to allow multiple buttons to be pressed concurrently
+    // order is up, right, down, left, e, f, joystick
+    bool buttonStates[7];
 
     // Joystick callbacks
     void (*centerCallback)(void);
