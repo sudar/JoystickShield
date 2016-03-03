@@ -200,8 +200,8 @@ void JoystickShield::processEvents() {
     buttonStates[1] = digitalRead(pin_right_button) == LOW;
     buttonStates[2] = digitalRead(pin_down_button) == LOW;
     buttonStates[3] = digitalRead(pin_left_button) == LOW;
-    buttonStates[5] = digitalRead(pin_E_button) == LOW;
-    buttonStates[4] = digitalRead(pin_F_button) == LOW;
+    buttonStates[4] = digitalRead(pin_E_button) == LOW;
+    buttonStates[5] = digitalRead(pin_F_button) == LOW;
     buttonStates[6] = digitalRead(pin_joystick_button) == LOW;
 }
 
