@@ -67,6 +67,7 @@ public:
 
     void setJoystickPins (byte pinX, byte pinY);
     void setButtonPins(byte pinSelect, byte pinUp, byte pinRight, byte pinDown, byte pinLeft, byte pinF, byte pinE);
+    void setButtonPinsUnpressedState(byte pinSelect, byte pinUp, byte pinRight, byte pinDown, byte pinLeft, byte pinF, byte pinE);
     void setThreshold(int xLow, int xHigh, int yLow, int yHigh);
 
     void processEvents();
@@ -140,7 +141,15 @@ private:
     byte pin_left_button;
 	byte pin_F_button;
 	byte pin_E_button;
-	
+
+	byte pin_joystick_button_unpressed;
+	byte pin_up_button_unpressed;
+	byte pin_right_button_unpressed;
+	byte pin_down_button_unpressed;
+	byte pin_left_button_unpressed;
+	byte pin_F_button_unpressed;
+	byte pin_E_button_unpressed;
+
 	// joystick
 	byte joystickStroke;
 	int x_position;

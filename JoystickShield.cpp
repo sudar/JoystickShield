@@ -88,14 +88,32 @@ void JoystickShield::setButtonPins(byte pinSelect, byte pinUp, byte pinRight, by
 	pinMode(pin_E_button	   , INPUT);
 	pinMode(pin_F_button       , INPUT);
 
-    // Enable "pull-up resistors" for buttons
-    digitalWrite(pin_joystick_button, HIGH);
-    digitalWrite(pin_up_button      , HIGH);
-    digitalWrite(pin_right_button   , HIGH);
-    digitalWrite(pin_down_button    , HIGH);
-    digitalWrite(pin_left_button    , HIGH);
-	digitalWrite(pin_F_button       , HIGH);
-	digitalWrite(pin_E_button       , HIGH);
+	// buttons use pull-up resistors by default
+	setButtonPinsUnpressedState(HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH);
+}
+
+/**
+ * Configure if the input from an unpressed button is HIGH or LOW.
+ * This will enable a pull-up or a pull-down resistor for the pin of the button correspondingly.
+ */
+void JoystickShield::setButtonPinsUnpressedState(byte pinSelect, byte pinUp, byte pinRight, byte pinDown, byte pinLeft, byte pinF, byte pinE) {
+	// store unpressed states
+	pin_joystick_button_unpressed = pinSelect ? HIGH : LOW;
+	pin_up_button_unpressed       = pinUp     ? HIGH : LOW;
+	pin_right_button_unpressed    = pinRight  ? HIGH : LOW;
+	pin_down_button_unpressed     = pinDown   ? HIGH : LOW;
+	pin_left_button_unpressed     = pinLeft   ? HIGH : LOW;
+	pin_F_button_unpressed        = pinF      ? HIGH : LOW;
+	pin_E_button_unpressed        = pinE      ? HIGH : LOW;
+
+	// Enable pull-up or pull-down resistors for buttons
+	digitalWrite(pin_joystick_button, pin_joystick_button_unpressed);
+	digitalWrite(pin_up_button      , pin_up_button_unpressed      );
+	digitalWrite(pin_right_button   , pin_right_button_unpressed   );
+	digitalWrite(pin_down_button    , pin_down_button_unpressed    );
+	digitalWrite(pin_left_button    , pin_left_button_unpressed    );
+	digitalWrite(pin_F_button       , pin_F_button_unpressed       );
+	digitalWrite(pin_E_button       , pin_E_button_unpressed       );
 }
 
 /**
@@ -196,13 +214,13 @@ void JoystickShield::processEvents() {
     }
 	
     // Determine which buttons were pressed, set button states array values to true/false accordingly
-    buttonStates[0] = digitalRead(pin_up_button) == LOW;
-    buttonStates[1] = digitalRead(pin_right_button) == LOW;
-    buttonStates[2] = digitalRead(pin_down_button) == LOW;
-    buttonStates[3] = digitalRead(pin_left_button) == LOW;
-    buttonStates[5] = digitalRead(pin_E_button) == LOW;
-    buttonStates[4] = digitalRead(pin_F_button) == LOW;
-    buttonStates[6] = digitalRead(pin_joystick_button) == LOW;
+	buttonStates[0] = digitalRead(pin_up_button)       != pin_up_button_unpressed;
+	buttonStates[1] = digitalRead(pin_right_button)    != pin_right_button_unpressed;
+	buttonStates[2] = digitalRead(pin_down_button)     != pin_down_button_unpressed;
+	buttonStates[3] = digitalRead(pin_left_button)     != pin_left_button_unpressed;
+	buttonStates[4] = digitalRead(pin_E_button)        != pin_E_button_unpressed;
+	buttonStates[5] = digitalRead(pin_F_button)        != pin_F_button_unpressed;
+	buttonStates[6] = digitalRead(pin_joystick_button) != pin_joystick_button_unpressed;
 }
 
 
